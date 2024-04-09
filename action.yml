@@ -254,8 +254,9 @@ runs:
         PKG_CONFIG_PATH: /usr/lib/aarch64-linux-gnu/pkgconfig
       run: |
         ${{ inputs.pawpaw == 'true' }} && pushd PawPaw && source local.env ${{ env.PAWPAW_TARGET }} && popd
-        make ${{ env.MAKE_EXTRA_ARGS }} features
-        make ${{ env.MAKE_EXTRA_ARGS }} -j $(nproc)
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        make ${{ env.MAKE_EXTRA_ARGS }} -C build -j $(nproc)
+        cp -r build/bin/ .
     - name: Build linux armhf cross-compiled
       if: ${{ inputs.target == 'linux-armhf' }}
       shell: bash
@@ -266,8 +267,9 @@ runs:
         PKG_CONFIG_PATH: /usr/lib/arm-linux-gnueabihf/pkgconfig
       run: |
         ${{ inputs.pawpaw == 'true' }} && pushd PawPaw && source local.env ${{ env.PAWPAW_TARGET }} && popd
-        make ${{ env.MAKE_EXTRA_ARGS }} features
-        make ${{ env.MAKE_EXTRA_ARGS }} -j $(nproc)
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        make ${{ env.MAKE_EXTRA_ARGS }} -C build -j $(nproc)
+        cp -r build/bin/ .
     - name: Build linux i686
       if: ${{ inputs.target == 'linux-i386' || inputs.target == 'linux-i686' }}
       shell: bash
@@ -280,8 +282,9 @@ runs:
         PKG_CONFIG_PATH: /usr/lib/i386-linux-gnu/pkgconfig
       run: |
         ${{ inputs.pawpaw == 'true' }} && pushd PawPaw && source local.env ${{ env.PAWPAW_TARGET }} && popd
-        make ${{ env.MAKE_EXTRA_ARGS }} features
-        make ${{ env.MAKE_EXTRA_ARGS }} -j $(nproc)
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        make ${{ env.MAKE_EXTRA_ARGS }} -C build -j $(nproc)
+        cp -r build/bin/ .
     - name: Build linux riscv64 cross-compiled
       if: ${{ inputs.target == 'linux-riscv64' }}
       shell: bash
@@ -292,8 +295,9 @@ runs:
         PKG_CONFIG_PATH: /usr/lib/riscv64-linux-gnu/pkgconfig
       run: |
         ${{ inputs.pawpaw == 'true' }} && pushd PawPaw && source local.env ${{ env.PAWPAW_TARGET }} && popd
-        make ${{ env.MAKE_EXTRA_ARGS }} features
-        make ${{ env.MAKE_EXTRA_ARGS }} -j $(nproc)
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        make ${{ env.MAKE_EXTRA_ARGS }} -C build -j $(nproc)
+        cp -r build/bin/ .
     - name: Build linux x86_64
       if: ${{ inputs.target == 'linux-x86_64' || inputs.target == 'linux' }}
       shell: bash
@@ -301,8 +305,9 @@ runs:
         LDFLAGS: -static-libgcc -static-libstdc++
       run: |
         ${{ inputs.pawpaw == 'true' }} && pushd PawPaw && source local.env ${{ env.PAWPAW_TARGET }} && popd
-        make ${{ env.MAKE_EXTRA_ARGS }} features
-        make ${{ env.MAKE_EXTRA_ARGS }} -j $(nproc)
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        make ${{ env.MAKE_EXTRA_ARGS }} -C build -j $(nproc)
+        cp -r build/bin/ .
     - name: Build macOS intel
       if: ${{ inputs.target == 'macos-intel' }}
       shell: bash
@@ -312,8 +317,10 @@ runs:
         LDFLAGS: -arch x86_64 -mmacosx-version-min=10.8 -stdlib=libc++
       run: |
         ${{ inputs.pawpaw == 'true' }} && pushd PawPaw && source local.env ${{ env.PAWPAW_TARGET }} && popd
-        make ${{ env.MAKE_EXTRA_ARGS }} features
-        make ${{ env.MAKE_EXTRA_ARGS }} -j $(sysctl -n hw.logicalcpu)
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        make ${{ env.MAKE_EXTRA_ARGS }} -C build -j $(sysctl -n hw.logicalcpu)
+        ls
+        cp -r build/bin/ .
         ${{ inputs.dpf_path }}/utils/package-osx-bundles.sh
     - name: Build macOS universal
       if: ${{ inputs.target == 'macos' || inputs.target == 'macos-universal' }}
@@ -324,8 +331,9 @@ runs:
         LDFLAGS: -arch x86_64 -arch arm64 -mmacosx-version-min=10.12
       run: |
         ${{ inputs.pawpaw == 'true' }} && pushd PawPaw && source local.env ${{ env.PAWPAW_TARGET }} && popd
-        make ${{ env.MAKE_EXTRA_ARGS }} features
-        make ${{ env.MAKE_EXTRA_ARGS }} NOOPT=true -j $(sysctl -n hw.logicalcpu)
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        make ${{ env.MAKE_EXTRA_ARGS }} NOOPT=true -C build -j $(sysctl -n hw.logicalcpu)
+        cp -R build/bin/ .
         ${{ inputs.dpf_path }}/utils/package-osx-bundles.sh
     - name: Build macOS universal (10.15)
       if: ${{ inputs.target == 'macos-10.15' || inputs.target == 'macos-universal-10.15' }}
@@ -336,8 +344,9 @@ runs:
         LDFLAGS: -arch x86_64 -arch arm64 -mmacosx-version-min=10.15
       run: |
         ${{ inputs.pawpaw == 'true' }} && pushd PawPaw && source local.env ${{ env.PAWPAW_TARGET }} && popd
-        make ${{ env.MAKE_EXTRA_ARGS }} features
-        make ${{ env.MAKE_EXTRA_ARGS }} NOOPT=true -j $(sysctl -n hw.logicalcpu)
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        make ${{ env.MAKE_EXTRA_ARGS }} NOOPT=true -C build -j $(sysctl -n hw.logicalcpu)
+        cp -R build/bin/ .
         ${{ inputs.dpf_path }}/utils/package-osx-bundles.sh
     - name: Build win32 cross-compiled
       if: ${{ inputs.target == 'win32' }}
@@ -351,8 +360,9 @@ runs:
         WINEDEBUG: "-all"
       run: |
         ${{ inputs.pawpaw == 'true' }} && pushd PawPaw && source local.env ${{ env.PAWPAW_TARGET }} && popd
-        make ${{ env.MAKE_EXTRA_ARGS }} features
-        make ${{ env.MAKE_EXTRA_ARGS }} -j $(nproc)
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        make ${{ env.MAKE_EXTRA_ARGS }} -C build -j $(nproc)
+        cp -r build/bin/ .
     - name: Build win64 cross-compiled
       if: ${{ inputs.target == 'win64' }}
       shell: bash
@@ -365,8 +375,9 @@ runs:
         WINEDEBUG: "-all"
       run: |
         ${{ inputs.pawpaw == 'true' }} && pushd PawPaw && source local.env ${{ env.PAWPAW_TARGET }} && popd
-        make ${{ env.MAKE_EXTRA_ARGS }} features
-        make ${{ env.MAKE_EXTRA_ARGS }} -j $(nproc)
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        make ${{ env.MAKE_EXTRA_ARGS }} -C build -j $(nproc)
+        cp -r build/bin/ .
     - name: Build plugins
       if: ${{ inputs.target == 'pluginval' || inputs.target == 'plugin-validation' }}
       shell: bash
@@ -377,8 +388,9 @@ runs:
         PAWPAW_SKIP_STRIPPING: 1
       run: |
         ${{ inputs.pawpaw == 'true' }} && pushd PawPaw && source local.env ${{ env.PAWPAW_TARGET }} && popd
-        make ${{ inputs.extraargs }} features
-        make ${{ inputs.extraargs }} NOOPT=true SKIP_STRIPPING=true -j $(nproc)
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        make ${{ inputs.extraargs }} NOOPT=true SKIP_STRIPPING=true -C build -j $(nproc)
+        cp -r build/bin/ .
 
     # pluginval
     - name: Validate LV2 ttl syntax
